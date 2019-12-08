@@ -1,11 +1,17 @@
 package com.aoc2019.day4
 
+import com.aoc2019.day4.PasswordSolver.PasswordValidationStrategy.ANY_DOUBLES
+import com.aoc2019.day4.PasswordSolver.PasswordValidationStrategy.STRICT_DOUBLES
+
 class PasswordSolver(
         val lowerLimit: Int,
         val upperLimit: Int
 ) {
 
-    fun isPasswordValid(digits: Array<Int>): Boolean {
+    fun isPasswordValid(
+            digits: Array<Int>,
+            strategy: PasswordValidationStrategy
+    ): Boolean {
         if (digits.size != 6) {
             return false
         }
@@ -16,7 +22,10 @@ class PasswordSolver(
             return false
         }
 
-        if (!digits.toList().windowed(2).any { it[0] == it[1] }) {
+        if (when (strategy) {
+                    ANY_DOUBLES -> !digits.toList().windowed(2).any { it[0] == it[1] }
+                    STRICT_DOUBLES -> !hasValidDouble(digits)
+                }) {
             return false
         }
 
@@ -27,7 +36,28 @@ class PasswordSolver(
         return true
     }
 
-    fun generateValidPasswords(): Int {
+    private fun hasValidDouble(digits: Array<Int>): Boolean {
+        var currIndex = 0
+
+        while (currIndex < digits.size) {
+            var windowEnd = currIndex + 1
+
+            val currVal = digits[currIndex]
+            while (windowEnd < digits.size && digits[windowEnd] == currVal) {
+                windowEnd++
+            }
+
+            if (windowEnd == currIndex + 2) {
+                return true
+            }
+
+            currIndex = windowEnd
+        }
+
+        return false
+    }
+
+    fun generateValidPasswords(strategy: PasswordValidationStrategy): Int {
         val startString = lowerLimit.toString()
         val curr = arrayOf(
                 startString[0].toString().toInt(),
@@ -41,7 +71,7 @@ class PasswordSolver(
         var validPasswordCount = 0
 
         while (curr.passwordValue() <= upperLimit) {
-            if (isPasswordValid(curr)) {
+            if (isPasswordValid(curr, strategy)) {
                 validPasswordCount++
             }
 
@@ -58,6 +88,11 @@ class PasswordSolver(
         }
 
         return validPasswordCount
+    }
+
+    enum class PasswordValidationStrategy() {
+        ANY_DOUBLES,
+        STRICT_DOUBLES
     }
 
 }

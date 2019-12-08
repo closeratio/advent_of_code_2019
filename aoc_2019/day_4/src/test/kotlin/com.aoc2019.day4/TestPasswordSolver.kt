@@ -1,5 +1,7 @@
 package com.aoc2019.day4
 
+import com.aoc2019.day4.PasswordSolver.PasswordValidationStrategy.ANY_DOUBLES
+import com.aoc2019.day4.PasswordSolver.PasswordValidationStrategy.STRICT_DOUBLES
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Test
@@ -15,16 +17,26 @@ class TestPasswordSolver {
     }
 
     @Test
-    fun isPasswordValid() {
-        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 5, 5)), `is`(true))
+    fun isPasswordValidAnyDoubles() {
+        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 5, 5), ANY_DOUBLES), `is`(true))
 
-        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 5, 6)), `is`(false))
-        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 4, 2)), `is`(false))
+        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 5, 6), ANY_DOUBLES), `is`(false))
+        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 4, 2), ANY_DOUBLES), `is`(false))
 
-        assertThat(solver.isPasswordValid(arrayOf(1, 1, 2, 2, 3, 3)), `is`(true))
+        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 4, 4), ANY_DOUBLES), `is`(true))
+    }
 
-        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 4, 4)), `is`(false))
-        assertThat(solver.isPasswordValid(arrayOf(1, 1, 1, 1, 2, 2)), `is`(false))
+    @Test
+    fun isPasswordValidStrictDoubles() {
+        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 5, 5), STRICT_DOUBLES), `is`(true))
+
+        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 5, 6), STRICT_DOUBLES), `is`(false))
+        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 4, 2), STRICT_DOUBLES), `is`(false))
+
+        assertThat(solver.isPasswordValid(arrayOf(1, 1, 2, 2, 3, 3), STRICT_DOUBLES), `is`(true))
+
+        assertThat(solver.isPasswordValid(arrayOf(1, 2, 3, 4, 4, 4), STRICT_DOUBLES), `is`(false))
+        assertThat(solver.isPasswordValid(arrayOf(1, 1, 1, 1, 2, 2), STRICT_DOUBLES), `is`(true))
     }
 
 }
