@@ -2,12 +2,12 @@ package com.aoc2019.common.computer
 
 class Computer(
         val program: Array<Int>,
-        val input: Int?
+        val inputValues: ArrayList<Int>
 ) {
 
     var programCounter = 0
     var finished = false
-    var output: Int? = null
+    var outputs = ArrayList<Int>()
 
     fun iterate() {
         if (finished) {
@@ -25,27 +25,61 @@ class Computer(
         }
     }
 
-    fun add() {
-        val pc = programCounter
-        program[program[pc + 3]] = program[program[pc + 1]] + program[program[pc + 2]]
+    private fun getModeIndicators(expectedLength: Int) = program[programCounter]
+            .toString()
+            .dropLast(2)
+            .reversed()
+            .padEnd(expectedLength, '0')
+            .map { it.toString().toInt() }
+            .take(expectedLength)
+
+    private fun getParamValue(
+            modeIndicator: Int,
+            pcOffset: Int
+    ) = when (modeIndicator) {
+        0 -> program[program[programCounter + pcOffset]]
+        1 -> program[programCounter + pcOffset]
+        else -> throw IllegalArgumentException("Unhandled mode: $modeIndicator")
+    }
+
+    private fun add() {
+        val modeIndicators = getModeIndicators(2)
+
+        val paramValue1 = getParamValue(modeIndicators[0], 1)
+        val paramValue2 = getParamValue(modeIndicators[1], 2)
+
+        program[program[programCounter + 3]] = paramValue1 + paramValue2
 
         programCounter += 4
     }
 
-    fun multiply() {
-        val pc = programCounter
-        program[program[pc + 3]] = program[program[pc + 1]] * program[program[pc + 2]]
+    private fun multiply() {
+        val modeIndicators = getModeIndicators(2)
+
+        val paramValue1 = getParamValue(modeIndicators[0], 1)
+        val paramValue2 = getParamValue(modeIndicators[1], 2)
+
+        program[program[programCounter + 3]] = paramValue1 * paramValue2
 
         programCounter += 4
     }
 
     fun takeInput() {
-        // TODO: Implement
+        program[program[programCounter + 1]] = inputValues.first()
+
+        inputValues.removeAt(0) // "Consume" the value
+
         programCounter += 2
     }
 
     fun writeOutput() {
-        // TODO: IMplement
+
+        val modeIndicators = getModeIndicators(1)
+
+        val paramValue = getParamValue(modeIndicators[0], 1)
+
+        outputs.add(paramValue)
+
         programCounter += 2
     }
 
@@ -63,7 +97,7 @@ class Computer(
     companion object {
         fun from(
                 programData: String,
-                input: Int? = null
+                input: ArrayList<Int> = arrayListOf()
         ): Computer = Computer(programData
                 .trim()
                 .split(",")
