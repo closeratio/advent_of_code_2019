@@ -1,4 +1,4 @@
-package com.aoc2019.common
+package com.aoc2019.common.math
 
 import kotlin.math.abs
 import kotlin.math.pow

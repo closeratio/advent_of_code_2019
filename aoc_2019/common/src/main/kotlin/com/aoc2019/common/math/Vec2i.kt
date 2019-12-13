@@ -1,4 +1,4 @@
-package com.aoc2019.common
+package com.aoc2019.common.math
 
 class Vec2i(
         override val x: Int,
@@ -23,7 +23,7 @@ class Vec2i(
     private operator fun times(amount: Int): Vec2i = Vec2i(x * amount, y * amount)
 
     companion object {
-        val ZERO = Vec2i.from(0, 0)
+        val ZERO = from(0, 0)
 
         fun from(x: Number, y: Number) = Vec2i(x.toInt(), y.toInt())
     }

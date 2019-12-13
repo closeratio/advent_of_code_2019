@@ -1,6 +1,6 @@
 package com.aoc2019.day3
 
-import com.aoc2019.common.Vec2i
+import com.aoc2019.common.math.Vec2i
 import com.aoc2019.day3.Direction.*
 
 class Circuit(
