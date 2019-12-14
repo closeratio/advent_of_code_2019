@@ -8,8 +8,15 @@ object Runner {
         println(solarSystem.totalOrbits())
     }
 
+    fun runPart2() {
+        val solarSystem = SolarSystem.from(javaClass.getResource("/input.txt").readText())
+
+        println(solarSystem.transfersToSanta())
+    }
+
 }
 
 fun main() {
     Runner.runPart1()
+    Runner.runPart2()
 }

@@ -12,6 +12,8 @@ class Planet(
         return getParentOrbitCount() + children.map { it.getTotalOrbits() }.sum()
     }
 
+    fun parentPath(): List<Planet> = (parent?.parentPath() ?: listOf()) + this
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

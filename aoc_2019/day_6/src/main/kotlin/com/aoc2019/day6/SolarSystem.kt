@@ -16,7 +16,13 @@ class SolarSystem(
     }
 
     fun transfersToSanta(): Int {
-        return 0
+        val youPath = planets.find { it.id.id == "YOU" }!!.parentPath().toSet()
+        val santaPath = planets.find { it.id.id == "SAN" }!!.parentPath().toSet()
+
+        val commonAncestors = youPath.intersect(santaPath)
+        val path = (youPath - commonAncestors) + (santaPath - commonAncestors)
+
+        return path.size - 2
     }
 
     companion object {
