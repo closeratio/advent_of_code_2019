@@ -1,5 +1,8 @@
 package com.aoc2019.common.computer
 
+import com.aoc2019.common.computer.ParameterMode.IMMEDIATE
+import com.aoc2019.common.computer.ParameterMode.POSITION
+
 class Computer(
         val program: Array<Int>,
         val inputValues: ArrayList<Int>
@@ -20,26 +23,36 @@ class Computer(
             2 -> multiply()
             3 -> takeInput()
             4 -> writeOutput()
+            5 -> jumpIfTrue()
+            6 -> jumpIfFalse()
+            7 -> lessThan()
+            8 -> equals()
             99 -> halt()
             else -> throw IllegalStateException("Unknown opcode ${program[pc]} at index $pc")
         }
     }
 
-    private fun getModeIndicators(expectedLength: Int) = program[programCounter]
+    private fun getModeIndicators(expectedLength: Int): List<ParameterMode> = program[programCounter]
             .toString()
             .dropLast(2)
             .reversed()
             .padEnd(expectedLength, '0')
             .map { it.toString().toInt() }
+            .map {
+                when(it) {
+                    0 -> POSITION
+                    1 -> IMMEDIATE
+                    else -> throw IllegalArgumentException("Unhandled mode: $it")
+                }
+            }
             .take(expectedLength)
 
     private fun getParamValue(
-            modeIndicator: Int,
+            parameterMode: ParameterMode,
             pcOffset: Int
-    ) = when (modeIndicator) {
-        0 -> program[program[programCounter + pcOffset]]
-        1 -> program[programCounter + pcOffset]
-        else -> throw IllegalArgumentException("Unhandled mode: $modeIndicator")
+    ) = when (parameterMode) {
+        POSITION -> program[program[programCounter + pcOffset]]
+        IMMEDIATE -> program[programCounter + pcOffset]
     }
 
     private fun add() {
@@ -64,7 +77,7 @@ class Computer(
         programCounter += 4
     }
 
-    fun takeInput() {
+    private fun takeInput() {
         program[program[programCounter + 1]] = inputValues.first()
 
         inputValues.removeAt(0) // "Consume" the value
@@ -72,7 +85,7 @@ class Computer(
         programCounter += 2
     }
 
-    fun writeOutput() {
+    private fun writeOutput() {
 
         val modeIndicators = getModeIndicators(1)
 
@@ -83,7 +96,55 @@ class Computer(
         programCounter += 2
     }
 
-    fun halt() {
+    private fun jumpIfTrue() {
+        val modeIndicators = getModeIndicators(2)
+
+        val paramValue1 = getParamValue(modeIndicators[0], 1)
+        val paramValue2 = getParamValue(modeIndicators[1], 2)
+
+        if (paramValue1 != 0) {
+            programCounter = paramValue2
+        } else {
+            programCounter += 3
+        }
+    }
+
+    private fun jumpIfFalse() {
+        val modeIndicators = getModeIndicators(2)
+
+        val paramValue1 = getParamValue(modeIndicators[0], 1)
+        val paramValue2 = getParamValue(modeIndicators[1], 2)
+
+        if (paramValue1 == 0) {
+            programCounter = paramValue2
+        } else {
+            programCounter += 3
+        }
+    }
+
+    private fun lessThan() {
+        val modeIndicators = getModeIndicators(2)
+
+        val paramValue1 = getParamValue(modeIndicators[0], 1)
+        val paramValue2 = getParamValue(modeIndicators[1], 2)
+
+        program[program[programCounter + 3]] = if (paramValue1 < paramValue2) 1 else 0
+
+        programCounter += 4
+    }
+
+    private fun equals() {
+        val modeIndicators = getModeIndicators(2)
+
+        val paramValue1 = getParamValue(modeIndicators[0], 1)
+        val paramValue2 = getParamValue(modeIndicators[1], 2)
+
+        program[program[programCounter + 3]] = if (paramValue1 == paramValue2) 1 else 0
+
+        programCounter += 4
+    }
+
+    private fun halt() {
         finished = true
     }
 
@@ -97,13 +158,13 @@ class Computer(
     companion object {
         fun from(
                 programData: String,
-                input: ArrayList<Int> = arrayListOf()
+                input: List<Int> = listOf()
         ): Computer = Computer(programData
                 .trim()
                 .split(",")
                 .map { it.trim().toInt() }
                 .toTypedArray(),
-                input
+                ArrayList(input)
         )
     }
 
