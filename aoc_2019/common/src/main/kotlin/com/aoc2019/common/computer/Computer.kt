@@ -2,10 +2,12 @@ package com.aoc2019.common.computer
 
 import com.aoc2019.common.computer.ParameterMode.IMMEDIATE
 import com.aoc2019.common.computer.ParameterMode.POSITION
+import java.util.*
+import kotlin.collections.ArrayList
 
 class Computer(
         val program: Array<Int>,
-        val inputValues: ArrayList<Int>
+        val inputValues: LinkedList<Int>
 ) {
 
     var programCounter = 0
@@ -78,9 +80,7 @@ class Computer(
     }
 
     private fun takeInput() {
-        program[program[programCounter + 1]] = inputValues.first()
-
-        inputValues.removeAt(0) // "Consume" the value
+        program[program[programCounter + 1]] = inputValues.pop()
 
         programCounter += 2
     }
@@ -164,7 +164,7 @@ class Computer(
                 .split(",")
                 .map { it.trim().toInt() }
                 .toTypedArray(),
-                ArrayList(input)
+                LinkedList(input)
         )
     }
 
