@@ -10,7 +10,7 @@ object Runner {
         program.program[1] = 12
         program.program[2] = 2
 
-        program.iterateUntilFinished()
+        program.iterateUntilFinishedOrWaiting()
         println(program.program[0])
     }
 
@@ -22,7 +22,7 @@ object Runner {
                 program.program[1] = noun
                 program.program[2] = verb
 
-                program.iterateUntilFinished()
+                program.iterateUntilFinishedOrWaiting()
                 val output = program.program[0]
                 if (output == 19690720) {
                     println(100 * noun + verb)

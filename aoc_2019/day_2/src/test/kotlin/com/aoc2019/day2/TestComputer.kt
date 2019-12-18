@@ -29,7 +29,7 @@ class TestComputer {
 
     @Test
     fun iterateUntilFinished() {
-        program.iterateUntilFinished()
+        program.iterateUntilFinishedOrWaiting()
 
         assertThat(program.programCounter, `is`(8))
     }
@@ -37,22 +37,22 @@ class TestComputer {
     @Test
     fun smallerPrograms() {
         assertThat(
-                Computer.from("1,0,0,0,99").iterateUntilFinished().program,
+                Computer.from("1,0,0,0,99").iterateUntilFinishedOrWaiting().program,
                 `is`(arrayOf(2, 0, 0, 0, 99))
         )
 
         assertThat(
-                Computer.from("2,3,0,3,99").iterateUntilFinished().program,
+                Computer.from("2,3,0,3,99").iterateUntilFinishedOrWaiting().program,
                 `is`(arrayOf(2, 3, 0, 6, 99))
         )
 
         assertThat(
-                Computer.from("2,4,4,5,99,0").iterateUntilFinished().program,
+                Computer.from("2,4,4,5,99,0").iterateUntilFinishedOrWaiting().program,
                 `is`(arrayOf(2, 4, 4, 5, 99, 9801))
         )
 
         assertThat(
-                Computer.from("1,1,1,4,99,5,6,0,99").iterateUntilFinished().program,
+                Computer.from("1,1,1,4,99,5,6,0,99").iterateUntilFinishedOrWaiting().program,
                 `is`(arrayOf(30, 1, 1, 4, 2, 5, 6, 0, 99))
         )
     }

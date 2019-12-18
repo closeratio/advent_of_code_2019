@@ -3,7 +3,6 @@ package com.aoc2019.common.computer
 import com.aoc2019.common.computer.ParameterMode.IMMEDIATE
 import com.aoc2019.common.computer.ParameterMode.POSITION
 import java.util.*
-import kotlin.collections.ArrayList
 
 class Computer(
         val program: Array<Int>,
@@ -12,7 +11,8 @@ class Computer(
 
     var programCounter = 0
     var finished = false
-    var outputs = ArrayList<Int>()
+    var waiting = false
+    var outputs = LinkedList<Int>()
 
     fun iterate() {
         if (finished) {
@@ -32,6 +32,14 @@ class Computer(
             99 -> halt()
             else -> throw IllegalStateException("Unknown opcode ${program[pc]} at index $pc")
         }
+    }
+
+    fun iterateUntilFinishedOrWaiting(): Computer {
+        waiting = false
+        while(!finished && !waiting) {
+            iterate()
+        }
+        return this
     }
 
     private fun getModeIndicators(expectedLength: Int): List<ParameterMode> = program[programCounter]
@@ -80,6 +88,11 @@ class Computer(
     }
 
     private fun takeInput() {
+        if (inputValues.isEmpty()) {
+            waiting = true
+            return
+        }
+
         program[program[programCounter + 1]] = inputValues.pop()
 
         programCounter += 2
@@ -146,13 +159,6 @@ class Computer(
 
     private fun halt() {
         finished = true
-    }
-
-    fun iterateUntilFinished(): Computer {
-        while(!finished) {
-            iterate()
-        }
-        return this
     }
 
     companion object {

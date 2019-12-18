@@ -7,7 +7,7 @@ object Runner {
     fun runPart1() {
         val computer = Computer.from(javaClass.getResource("/input.txt").readText(), listOf(1))
 
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         println(computer.outputs)
     }
@@ -15,7 +15,7 @@ object Runner {
     fun runPart2() {
         val computer = Computer.from(javaClass.getResource("/input.txt").readText(), listOf(5))
 
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         println(computer.outputs)
     }

@@ -13,7 +13,7 @@ class TestComputer {
     @Test
     fun computer1() {
         val computer = Computer.from(getResource("/test_input_1.txt"))
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         assertThat(computer.program, `is`(arrayOf(1002, 4, 3, 4, 99)))
     }
@@ -21,7 +21,7 @@ class TestComputer {
     @Test
     fun computer2Input0() {
         val computer = Computer.from(getResource("/test_input_2.txt"), listOf(0))
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         assertThat(computer.outputs, hasItems(0))
     }
@@ -29,7 +29,7 @@ class TestComputer {
     @Test
     fun computer2Input5() {
         val computer = Computer.from(getResource("/test_input_2.txt"), listOf(5))
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         assertThat(computer.outputs, hasItems(1))
     }
@@ -37,7 +37,7 @@ class TestComputer {
     @Test
     fun computer2InputMinus3() {
         val computer = Computer.from(getResource("/test_input_2.txt"), listOf(-3))
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         assertThat(computer.outputs, hasItems(1))
     }
@@ -45,7 +45,7 @@ class TestComputer {
     @Test
     fun computer3Input0() {
         val computer = Computer.from(getResource("/test_input_3.txt"), listOf(0))
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         assertThat(computer.outputs, hasItems(0))
     }
@@ -53,7 +53,7 @@ class TestComputer {
     @Test
     fun computer3Input2() {
         val computer = Computer.from(getResource("/test_input_3.txt"), listOf(2))
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         assertThat(computer.outputs, hasItems(1))
     }
@@ -61,7 +61,7 @@ class TestComputer {
     @Test
     fun computer3InputMinus4() {
         val computer = Computer.from(getResource("/test_input_3.txt"), listOf(-4))
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         assertThat(computer.outputs, hasItems(1))
     }
@@ -69,7 +69,7 @@ class TestComputer {
     @Test
     fun computer4Input6() {
         val computer = Computer.from(getResource("/test_input_4.txt"), listOf(6))
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         assertThat(computer.outputs, hasItems(999))
     }
@@ -77,7 +77,7 @@ class TestComputer {
     @Test
     fun computer4Input8() {
         val computer = Computer.from(getResource("/test_input_4.txt"), listOf(8))
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         assertThat(computer.outputs, hasItems(1000))
     }
@@ -85,7 +85,7 @@ class TestComputer {
     @Test
     fun computer4Input11() {
         val computer = Computer.from(getResource("/test_input_4.txt"), listOf(11))
-        computer.iterateUntilFinished()
+        computer.iterateUntilFinishedOrWaiting()
 
         assertThat(computer.outputs, hasItems(1001))
     }
