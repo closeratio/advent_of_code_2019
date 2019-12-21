@@ -17,10 +17,12 @@ class Vec2i(
     fun down() = down(1)
     fun down(amount: Int) = this + Vec2i(0, amount)
 
-    private operator fun plus(other: Vec2i): Vec2i = Vec2i(x + other.x, y + other.y)
-    private operator fun minus(other: Vec2i): Vec2i = this + (other * -1)
+    operator fun plus(other: Vec2i): Vec2i = Vec2i(x + other.x, y + other.y)
+    operator fun minus(other: Vec2i): Vec2i = this + (other * -1)
 
-    private operator fun times(amount: Int): Vec2i = Vec2i(x * amount, y * amount)
+    operator fun times(amount: Int): Vec2i = Vec2i(x * amount, y * amount)
+
+    override fun angleTo(other: Vec2<*>): Double = Vec2d(this).angleTo(Vec2d(other))
 
     companion object {
         val ZERO = from(0, 0)

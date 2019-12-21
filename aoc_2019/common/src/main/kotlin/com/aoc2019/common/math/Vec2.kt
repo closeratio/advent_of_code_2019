@@ -14,6 +14,8 @@ abstract class Vec2<T: Number> {
     fun length2(): Double = x.toDouble().pow(2) + y.toDouble().pow(2)
     fun length(): Double = length2().pow(0.5)
 
+    abstract fun angleTo(other: Vec2<*>): Double
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
