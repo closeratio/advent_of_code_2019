@@ -6,9 +6,9 @@ class FeedbackAmplifierSet(
         input: String
 ): AbstractAmplifierSet(input) {
 
-    override fun getAvailablePhaseSettings(): List<Int> = listOf(5, 6, 7, 8, 9)
+    override fun getAvailablePhaseSettings(): List<Long> = listOf(5, 6, 7, 8, 9)
 
-    override fun computeOutputValue(phaseSettings: List<Int>): Int {
+    override fun computeOutputValue(phaseSettings: List<Long>): Long {
 
         val computers = phaseSettings.map {
             Computer.from(input, listOf(it))

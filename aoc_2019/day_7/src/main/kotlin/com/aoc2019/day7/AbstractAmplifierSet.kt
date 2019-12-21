@@ -4,10 +4,10 @@ abstract class AbstractAmplifierSet(
         val input: String
 ) {
 
-    fun computeMaxOutputValue(): Pair<List<Int>, Int> {
+    fun computeMaxOutputValue(): Pair<List<Long>, Long> {
         val elements = getAvailablePhaseSettings()
 
-        val permutations = HashMap<List<Int>, Int>();
+        val permutations = HashMap<List<Long>, Long>();
         while (permutations.size < 120) {
             val permutation = elements.toMutableList()
             permutation.shuffle()
@@ -20,8 +20,8 @@ abstract class AbstractAmplifierSet(
         return permutations.maxBy { it.value }!!.toPair()
     }
 
-    abstract fun getAvailablePhaseSettings(): List<Int>
+    abstract fun getAvailablePhaseSettings(): List<Long>
 
-    abstract fun computeOutputValue(phaseSettings: List<Int>): Int
+    abstract fun computeOutputValue(phaseSettings: List<Long>): Long
 
 }

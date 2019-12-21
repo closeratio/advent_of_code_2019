@@ -7,11 +7,11 @@ object Runner {
     fun runPart1() {
         val program = Computer.from(javaClass.getResource("/input.txt").readText())
 
-        program.program[1] = 12
-        program.program[2] = 2
+        program.memory[1] = 12
+        program.memory[2] = 2
 
         program.iterateUntilFinishedOrWaiting()
-        println(program.program[0])
+        println(program.memory[0])
     }
 
     fun runPart2() {
@@ -19,12 +19,12 @@ object Runner {
             (0..99).forEach { verb ->
                 val program = Computer.from(javaClass.getResource("/input.txt").readText())
 
-                program.program[1] = noun
-                program.program[2] = verb
+                program.memory[1] = noun.toLong()
+                program.memory[2] = verb.toLong()
 
                 program.iterateUntilFinishedOrWaiting()
-                val output = program.program[0]
-                if (output == 19690720) {
+                val output = program.memory[0]
+                if (output == 19690720L) {
                     println(100 * noun + verb)
                     return
                 }

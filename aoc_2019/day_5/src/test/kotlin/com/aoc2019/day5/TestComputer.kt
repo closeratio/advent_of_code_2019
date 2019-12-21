@@ -15,7 +15,7 @@ class TestComputer {
         val computer = Computer.from(getResource("/test_input_1.txt"))
         computer.iterateUntilFinishedOrWaiting()
 
-        assertThat(computer.program, `is`(arrayOf(1002, 4, 3, 4, 99)))
+        assertThat(computer.memory.values(), `is`(listOf(1002L, 4L, 3L, 4L, 99L)))
     }
 
     @Test
@@ -23,7 +23,7 @@ class TestComputer {
         val computer = Computer.from(getResource("/test_input_2.txt"), listOf(0))
         computer.iterateUntilFinishedOrWaiting()
 
-        assertThat(computer.outputs, hasItems(0))
+        assertThat(computer.outputs, hasItems(0L))
     }
 
     @Test
@@ -31,7 +31,7 @@ class TestComputer {
         val computer = Computer.from(getResource("/test_input_2.txt"), listOf(5))
         computer.iterateUntilFinishedOrWaiting()
 
-        assertThat(computer.outputs, hasItems(1))
+        assertThat(computer.outputs, hasItems(1L))
     }
 
     @Test
@@ -39,7 +39,7 @@ class TestComputer {
         val computer = Computer.from(getResource("/test_input_2.txt"), listOf(-3))
         computer.iterateUntilFinishedOrWaiting()
 
-        assertThat(computer.outputs, hasItems(1))
+        assertThat(computer.outputs, hasItems(1L))
     }
 
     @Test
@@ -47,7 +47,7 @@ class TestComputer {
         val computer = Computer.from(getResource("/test_input_3.txt"), listOf(0))
         computer.iterateUntilFinishedOrWaiting()
 
-        assertThat(computer.outputs, hasItems(0))
+        assertThat(computer.outputs, hasItems(0L))
     }
 
     @Test
@@ -55,7 +55,7 @@ class TestComputer {
         val computer = Computer.from(getResource("/test_input_3.txt"), listOf(2))
         computer.iterateUntilFinishedOrWaiting()
 
-        assertThat(computer.outputs, hasItems(1))
+        assertThat(computer.outputs, hasItems(1L))
     }
 
     @Test
@@ -63,7 +63,7 @@ class TestComputer {
         val computer = Computer.from(getResource("/test_input_3.txt"), listOf(-4))
         computer.iterateUntilFinishedOrWaiting()
 
-        assertThat(computer.outputs, hasItems(1))
+        assertThat(computer.outputs, hasItems(1L))
     }
 
     @Test
@@ -71,7 +71,7 @@ class TestComputer {
         val computer = Computer.from(getResource("/test_input_4.txt"), listOf(6))
         computer.iterateUntilFinishedOrWaiting()
 
-        assertThat(computer.outputs, hasItems(999))
+        assertThat(computer.outputs, hasItems(999L))
     }
 
     @Test
@@ -79,7 +79,7 @@ class TestComputer {
         val computer = Computer.from(getResource("/test_input_4.txt"), listOf(8))
         computer.iterateUntilFinishedOrWaiting()
 
-        assertThat(computer.outputs, hasItems(1000))
+        assertThat(computer.outputs, hasItems(1000L))
     }
 
     @Test
@@ -87,7 +87,7 @@ class TestComputer {
         val computer = Computer.from(getResource("/test_input_4.txt"), listOf(11))
         computer.iterateUntilFinishedOrWaiting()
 
-        assertThat(computer.outputs, hasItems(1001))
+        assertThat(computer.outputs, hasItems(1001L))
     }
 
 

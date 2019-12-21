@@ -6,9 +6,9 @@ class SeriesAmplifierSet(
         input: String
 ): AbstractAmplifierSet(input) {
 
-    override fun getAvailablePhaseSettings(): List<Int> = listOf(0, 1, 2, 3, 4)
+    override fun getAvailablePhaseSettings(): List<Long> = listOf(0, 1, 2, 3, 4)
 
-    override fun computeOutputValue(phaseSettings: List<Int>): Int {
+    override fun computeOutputValue(phaseSettings: List<Long>): Long {
 
         val amplifiers = phaseSettings.map {
             Computer.from(input, listOf(it))
