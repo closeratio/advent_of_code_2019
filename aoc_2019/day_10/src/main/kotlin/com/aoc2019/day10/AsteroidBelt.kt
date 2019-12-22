@@ -7,27 +7,33 @@ class AsteroidBelt private constructor(
         val asteroids: Set<Asteroid>
 ) {
 
+    private fun groupAsteroidsByAngle(originAsteroid: Asteroid) = asteroids
+            .filter { it != originAsteroid }
+            .groupBy({
+                val angle = originAsteroid.position.angleTo(it.position)
+                // This is the hacky bit - because we're using the actual angle rather than a "chess piece" algorithm,
+                // we can't have the angle be too precise otherwise it'll separate asteroids that are considered to be
+                // part of the same line of sight.
+                (round(angle * 1000) / 1000)
+            }) { it }
+            .mapValues { (_, asteroids) ->
+                asteroids.sortedBy { originAsteroid.position.manhattan(it.position) }
+            }
+
     fun getOptimalPosition(): Pair<Vec2i, Int> {
         val optimal = asteroids
                 .map { asteroid ->
-                    val detectableCount = asteroids
-                            .filter { it != asteroid }
-                            .groupBy({
-                                val angle = asteroid.position.angleTo(it.position)
-                                (round(angle * 1000) / 1000)
-                            }) { it }
-//                            .mapValues { (_, asteroids) ->
-//                                asteroids.minBy {
-//                                    asteroid.position.manhattan(it.position)
-//                                }
-//                            }
-                            .size
-
-                    asteroid.position to detectableCount
+                    asteroid.position to groupAsteroidsByAngle(asteroid).size
                 }
                 .maxBy { it.second }!!
 
         return optimal
+    }
+
+    fun getNthDestroyedAsteroidPosition(n: Int): Vec2i {
+
+
+        return Vec2i.ZERO
     }
 
     companion object {
