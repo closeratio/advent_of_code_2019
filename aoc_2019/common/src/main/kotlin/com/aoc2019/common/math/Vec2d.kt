@@ -30,9 +30,23 @@ class Vec2d(
     operator fun times(amount: Int): Vec2d = Vec2d(x * amount, y * amount)
 
     override fun angleTo(other: Vec2<*>): Double {
-        val normalised = (Vec2d(this) - Vec2d(other)).normalize()
-        val absoluteAngle = atan2(normalised.y, normalised.x)
-        return absoluteAngle
+        // We have to faff around a bit here because both:
+        // * The coordinate system that AoC uses treats positive Y as "down"
+        // * Atan2 returns a value in the range of -180 to 180, and we need it normalised to 0 to 360
+        val normalisedVector = (Vec2d(this) - Vec2d(other)).normalize()
+
+        val absoluteAngle = atan2(normalisedVector.y, normalisedVector.x)
+        val normalisedAngle = if (absoluteAngle < 0) {
+            absoluteAngle + 360.0.toRadians() - 90.0.toRadians()
+        } else {
+            absoluteAngle - 90.0.toRadians()
+        }
+
+        return if (normalisedAngle < 0) {
+            360.0.toRadians() + normalisedAngle
+        } else {
+            normalisedAngle
+        }
     }
 
     private fun normalize(): Vec2d {

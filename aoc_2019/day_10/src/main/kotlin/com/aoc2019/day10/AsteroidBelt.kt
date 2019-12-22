@@ -7,7 +7,7 @@ class AsteroidBelt private constructor(
         val asteroids: Set<Asteroid>
 ) {
 
-    private fun groupAsteroidsByAngle(originAsteroid: Asteroid) = asteroids
+    private fun groupAsteroidsByAngle(originAsteroid: Asteroid): Map<Double, List<Asteroid>> = asteroids
             .filter { it != originAsteroid }
             .groupBy({
                 val angle = originAsteroid.position.angleTo(it.position)
@@ -30,10 +30,24 @@ class AsteroidBelt private constructor(
         return optimal
     }
 
-    fun getNthDestroyedAsteroidPosition(n: Int): Vec2i {
+    fun getAsteroidDestructionOrder(origin: Asteroid): List<Asteroid> {
+        val asteroidMap = groupAsteroidsByAngle(origin)
+                .mapValues { (_, group) -> group.toMutableList() }
+                .toSortedMap()
 
+        val destructionList = arrayListOf<Asteroid>()
 
-        return Vec2i.ZERO
+        while (asteroidMap.isNotEmpty()) {
+            asteroidMap.forEach { (_, group) ->
+                destructionList.add(group.removeAt(0))
+            }
+
+            asteroidMap.keys
+                    .filter { asteroidMap.getValue(it).isEmpty() }
+                    .forEach { asteroidMap.remove(it) }
+        }
+
+        return destructionList
     }
 
     companion object {

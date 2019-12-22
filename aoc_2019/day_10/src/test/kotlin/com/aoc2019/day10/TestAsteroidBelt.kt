@@ -72,14 +72,18 @@ class TestAsteroidBelt {
     fun getNthDestroyedAsteroidPositionInput5() {
         val belt = AsteroidBelt.from(javaClass.getResource("/test_input_5.txt").readText())
 
-        assertThat(belt.getNthDestroyedAsteroidPosition(200), `is`(Vec2i(8, 2)))
+        val order = belt.getAsteroidDestructionOrder(Asteroid(Vec2i(11, 13)))
+
+        assertThat(order[199].position, `is`(Vec2i(8, 2)))
     }
 
     @Test
     fun getNthDestroyedAsteroidPositionInput6() {
         val belt = AsteroidBelt.from(javaClass.getResource("/test_input_6.txt").readText())
 
-        assertThat(belt.getNthDestroyedAsteroidPosition(9), `is`(Vec2i(15, 1)))
+        val order = belt.getAsteroidDestructionOrder(Asteroid(Vec2i(8, 3)))
+
+        assertThat(order[8].position, `is`(Vec2i(15, 1)))
     }
 
 
