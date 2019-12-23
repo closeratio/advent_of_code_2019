@@ -22,6 +22,10 @@ class PasswordSolver(
             return false
         }
 
+        if (!digits.sortedArray().contentEquals(digits)) {
+            return false
+        }
+
         if (when (strategy) {
                     ANY_DOUBLES -> !digits.toList().windowed(2).any { it[0] == it[1] }
                     STRICT_DOUBLES -> !hasValidDouble(digits)
@@ -29,32 +33,11 @@ class PasswordSolver(
             return false
         }
 
-        if (!digits.sortedArray().contentEquals(digits)) {
-            return false
-        }
-
         return true
     }
 
     private fun hasValidDouble(digits: Array<Int>): Boolean {
-        var currIndex = 0
-
-        while (currIndex < digits.size) {
-            var windowEnd = currIndex + 1
-
-            val currVal = digits[currIndex]
-            while (windowEnd < digits.size && digits[windowEnd] == currVal) {
-                windowEnd++
-            }
-
-            if (windowEnd == currIndex + 2) {
-                return true
-            }
-
-            currIndex = windowEnd
-        }
-
-        return false
+        return digits.groupBy { it }.any { (_, v) -> v.size == 2 }
     }
 
     fun generateValidPasswords(strategy: PasswordValidationStrategy): Int {
