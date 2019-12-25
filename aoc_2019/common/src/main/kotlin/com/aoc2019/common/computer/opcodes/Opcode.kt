@@ -28,7 +28,7 @@ abstract class Opcode {
             }
             .take(expectedLength)
 
-    protected fun getOffset(
+    private fun getOffset(
             computer: Computer,
             pcOffset: Int
     ): Long = computer.memory[computer.programCounter + pcOffset]
