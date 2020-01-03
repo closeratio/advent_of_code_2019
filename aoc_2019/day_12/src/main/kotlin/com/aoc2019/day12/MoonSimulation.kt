@@ -1,10 +1,11 @@
 package com.aoc2019.day12
 
 import com.aoc2019.common.math.Vec3i
+import com.aoc2019.common.math.lowestCommonMultiplier
 import kotlin.math.abs
 
 class MoonSimulation(
-        initialState: Set<MoonState>
+        initialState: MoonStateSet
 ) {
 
     private val states = mutableListOf(initialState)
@@ -13,8 +14,8 @@ class MoonSimulation(
     fun lastState() = states.last()
 
     fun calculateNextState() {
-        val lastState = states.last()
-        states.add(lastState
+        val lastState = states.last().state
+        states.add(MoonStateSet(lastState
                 .map { moon ->
                     val velocity = moon.velocity + lastState
                             .filter { moon.name != it.name }
@@ -29,11 +30,12 @@ class MoonSimulation(
                             velocity
                     )
                 }
-                .toSet())
+                .toSet()))
     }
 
     fun calculateSystemEnergy(): Int {
         return lastState()
+                .state
                 .map { moonState ->
                     val pos = moonState.position
                     val vel = moonState.velocity
@@ -43,6 +45,34 @@ class MoonSimulation(
                     potentialEnergy * kineticEnergy
                 }
                 .sum()
+    }
+
+    fun findPeriod(): Long {
+        var xPeriod: Int? = null
+        var yPeriod: Int? = null
+        var zPeriod: Int? = null
+
+        val first = initialState()
+
+        while (xPeriod == null || yPeriod == null || zPeriod == null) {
+            calculateNextState()
+
+            val last = lastState()
+
+            if (xPeriod == null && last.equalDimension(first, Dimension.X)) {
+                xPeriod = states.size - 1
+            }
+
+            if (yPeriod == null && last.equalDimension(first, Dimension.Y)) {
+                yPeriod = states.size - 1
+            }
+
+            if (zPeriod == null && last.equalDimension(first, Dimension.Z)) {
+                zPeriod = states.size - 1
+            }
+        }
+
+        return listOf(xPeriod, yPeriod, zPeriod).lowestCommonMultiplier()
     }
 
     companion object {
@@ -58,7 +88,7 @@ class MoonSimulation(
         }
 
         fun from(input: String): MoonSimulation {
-            return MoonSimulation(input
+            return input
                     .trim()
                     .lines()
                     .map { it.trim() }
@@ -77,10 +107,13 @@ class MoonSimulation(
                                 Vec3i.ZERO
                         )
                     }
-                    .toSet())
+                    .toSet()
+                    .let {
+                        MoonSimulation(MoonStateSet(it))
+                    }
         }
 
-        fun fromState(input: String): Set<MoonState> {
+        fun fromState(input: String): MoonStateSet {
             return input
                     .trim()
                     .lines()
@@ -101,6 +134,9 @@ class MoonSimulation(
                         )
                     }
                     .toSet()
+                    .let {
+                        MoonStateSet(it)
+                    }
         }
 
     }

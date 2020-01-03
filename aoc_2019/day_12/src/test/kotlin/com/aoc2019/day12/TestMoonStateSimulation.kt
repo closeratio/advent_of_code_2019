@@ -74,4 +74,22 @@ class TestMoonStateSimulation {
 
         assertThat(sim.calculateSystemEnergy(), `is`(1940))
     }
+
+    @Test
+    fun findPeriodInput1() {
+        val sim = MoonSimulation.from(javaClass.getResource("/test_input_1.txt").readText())
+
+        val result = sim.findPeriod()
+
+        assertThat(result, `is`(2772L))
+    }
+
+    @Test
+    fun findPeriodInput2() {
+        val sim = MoonSimulation.from(javaClass.getResource("/test_input_2.txt").readText())
+
+        val result = sim.findPeriod()
+
+        assertThat(result, `is`(4686774924L))
+    }
 }
