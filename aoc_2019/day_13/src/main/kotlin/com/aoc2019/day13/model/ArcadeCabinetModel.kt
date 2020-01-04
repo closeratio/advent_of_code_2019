@@ -26,7 +26,7 @@ class ArcadeCabinetModel {
     var ballTile by ballTileProperty
 
     val scoreProperty = SimpleLongProperty()
-    val score by scoreProperty
+    var score by scoreProperty
 
     val frameCountProperty = SimpleLongProperty()
     var frameCount by frameCountProperty

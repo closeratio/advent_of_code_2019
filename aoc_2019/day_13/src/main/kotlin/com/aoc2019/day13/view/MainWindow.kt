@@ -23,6 +23,7 @@ class MainWindow : Fragment("Arcade Cabinet") {
         val canvWidth = 42.0 * tileWidth
         val canvHeight = 23.0 * tileWidth
         canvas(canvWidth, canvHeight) {
+
             // Redraw when the frame count is incremented
             model.frameCountProperty.addListener { _, _, _ ->
                 val context = graphicsContext2D
