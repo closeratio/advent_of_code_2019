@@ -31,6 +31,7 @@ allprojects {
         }
 
         implementation(kotlin("stdlib-jdk8"))
+        implementation(kotlin("reflect"))
 
         testImplementation("junit:junit:4.12")
         testImplementation("org.hamcrest:hamcrest-all:1.3")
