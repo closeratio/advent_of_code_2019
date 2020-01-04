@@ -8,7 +8,8 @@ import com.aoc2019.day13.view.Styles
 import tornadofx.App
 import tornadofx.find
 
-class ArcadeCabinetApp: App(
+class ArcadeCabinetApp(
+): App(
         MainWindow::class,
         Styles::class,
         ArcadeCabinetModelScope(
@@ -16,9 +17,10 @@ class ArcadeCabinetApp: App(
         )
 ) {
 
+    val controller = find<ArcadeCabinetController>(super.scope)
+
     override fun stop() {
         super.stop()
-
-        find<ArcadeCabinetController>().stop()
+        controller.stop()
     }
 }
