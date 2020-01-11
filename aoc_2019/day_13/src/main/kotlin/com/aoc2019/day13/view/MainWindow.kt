@@ -97,6 +97,14 @@ class MainWindow : Fragment("Arcade Cabinet") {
             }
         }
 
+        hbox(5) {
+            alignment = CENTER
+            label("Frame sleep time:")
+            spinner(min = 1, max = 1000, initialValue = 1, property = model.sleepTimeProperty) {
+                hgrow = ALWAYS
+                maxWidth = MAX_VALUE
+            }
+        }
 
         button("Start") {
             hgrow = ALWAYS

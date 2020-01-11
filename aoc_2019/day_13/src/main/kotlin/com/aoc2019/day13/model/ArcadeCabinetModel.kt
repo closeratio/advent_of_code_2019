@@ -5,6 +5,7 @@ import com.aoc2019.day13.model.tile.BallTile
 import com.aoc2019.day13.model.tile.BlockTile
 import com.aoc2019.day13.model.tile.PaddleTile
 import com.aoc2019.day13.model.tile.WallTile
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleLongProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
@@ -30,5 +31,8 @@ class ArcadeCabinetModel {
 
     val frameCountProperty = SimpleLongProperty()
     var frameCount by frameCountProperty
+
+    val sleepTimeProperty = SimpleIntegerProperty(1) // Default is 1000 FPS
+    var sleepTime by sleepTimeProperty
 
 }

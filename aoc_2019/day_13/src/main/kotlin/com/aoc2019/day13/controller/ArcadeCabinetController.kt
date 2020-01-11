@@ -85,7 +85,7 @@ class ArcadeCabinetController: Controller() {
                         else -> NEUTRAL
                     })
 
-                    Thread.sleep(1) // 1000 FPS
+                    Thread.sleep(model.sleepTime.toLong())
                 }
             } catch (exc: Exception) {
                 exc.printStackTrace()
