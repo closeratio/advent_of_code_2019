@@ -10,15 +10,38 @@ class Chemical(
     fun addCreationReaction(reaction: Reaction) = creationReactions.add(reaction)
     fun addContributedReaction(reaction: Reaction) = contributedReactions.add(reaction)
 
-    fun getRequiredAmount(inputChemical: ChemicalId): Long {
-        return if (inputChemical == id) {
-            1
-        } else {
-            creationReactions
-                    .flatMap { reaction -> reaction.inputs
-                            .map { it.chemical.getRequiredAmount(inputChemical) * it.amount }}
-                    .reduce { acc, curr -> acc + curr }
+    fun manufacture(
+            amount: Long,
+            inventory: MutableMap<ChemicalId, Long> = HashMap(),
+            manufactured: MutableMap<ChemicalId, Long> = HashMap()
+    ): Map<ChemicalId, Long> {
+        // Populate maps to make the rest of this method a bit cleaner
+        inventory.putIfAbsent(id, 0)
+        manufactured.putIfAbsent(id, 0)
+
+        // Get how much of the chemical we already have available
+        val amountInInventory = inventory.getValue(id)
+
+        // Work out how much more we need to  make (if any)
+        val amountToManufacture = when {
+            amountInInventory == 0L -> amount
+            amountInInventory >= amount -> {
+                inventory[id] = inventory.getValue(id) - amount
+                0
+            }
+            else -> {
+                val remaining = amount - inventory.getValue(id)
+                inventory[id] = 0
+                remaining
+            }
         }
+
+        // If there's still something left to manufacture, make it
+        if (amountToManufacture > 0) {
+
+        }
+
+        return manufactured
     }
 
     override fun equals(other: Any?): Boolean {

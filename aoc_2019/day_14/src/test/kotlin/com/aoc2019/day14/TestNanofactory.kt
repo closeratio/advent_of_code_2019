@@ -33,10 +33,9 @@ class TestNanofactory {
     @Test
     fun getRequiredAmountInput1() {
         val factory = Nanofactory.from(javaClass.getResource("/test_input_1.txt").readText())
+        val manufactured = factory.manufactureChemical(ChemicalId("FUEL"), 1L)
 
-        assertThat(
-                factory.getRequiredAmount(ChemicalId("ORE"),ChemicalId("FUEL")),
-                `is`(31L))
+        assertThat(manufactured.getValue(ChemicalId("ORE")), `is`(31L))
     }
 
 }

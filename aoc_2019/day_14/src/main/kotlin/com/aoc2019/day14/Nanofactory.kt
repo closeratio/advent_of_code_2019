@@ -5,13 +5,13 @@ class Nanofactory private constructor(
         val reactions: Set<Reaction>
 ) {
 
-    fun getRequiredAmount(
-            inputChemical: ChemicalId,
-            outputChemical: ChemicalId
-    ): Long {
-        val output = chemicals.find { it.id == outputChemical }!!
+    fun manufactureChemical(
+            chemical: ChemicalId,
+            amount: Long
+    ): Map<ChemicalId, Long> {
+        val output = chemicals.find { it.id == chemical }!!
 
-        return output.getRequiredAmount(inputChemical)
+        return output.manufacture(amount)
     }
 
     companion object {
