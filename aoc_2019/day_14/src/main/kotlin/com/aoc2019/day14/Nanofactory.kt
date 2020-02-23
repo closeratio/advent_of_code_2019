@@ -14,6 +14,59 @@ class Nanofactory private constructor(
         return output.manufacture(amount)
     }
 
+    fun getMaxOutputForInput(
+            inputAmount: ChemicalAmount,
+            output: ChemicalId
+    ): Long {
+        // Establsh lower and upper
+        var lower = 1L
+        var upper = 1L
+        var upperEstablished = false
+
+        while (!upperEstablished) {
+            val oreCount = manufactureChemical(output, upper).getValue(inputAmount.chemical.id)
+
+            if (oreCount > inputAmount.amount) {
+                upperEstablished =  true
+            } else {
+                lower = upper
+                upper *= 2
+            }
+        }
+
+        return findOutputAmount(
+                inputAmount,
+                output,
+                lower,
+                upper
+        )
+    }
+
+    private fun findOutputAmount(
+            inputAmount: ChemicalAmount,
+            output: ChemicalId,
+            lower: Long,
+            upper: Long
+    ): Long {
+        return if (upper - lower < 10) { // A bit arbitrary, but probably quicker than doing more recursion
+            lower.rangeTo(upper)
+                    .map { it to manufactureChemical(output, it).getValue(inputAmount.chemical.id) }
+                    .filter { it.second < inputAmount.amount }
+                    .map { it.first }
+                    .sorted()
+                    .last()
+        } else {
+            val mid = lower + ((upper - lower) / 2)
+            val oreCountMid = manufactureChemical(output, mid).getValue(inputAmount.chemical.id)
+
+            if (oreCountMid >= inputAmount.amount) {
+                findOutputAmount(inputAmount, output, lower, mid)
+            } else {
+                findOutputAmount(inputAmount, output, mid, upper)
+            }
+        }
+    }
+
     companion object {
 
         private fun getChemicalAmount(

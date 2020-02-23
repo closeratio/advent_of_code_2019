@@ -26,7 +26,7 @@ class Chemical(
         inventory.putIfAbsent(id, 0)
         manufactured.putIfAbsent(id, 0)
 
-        if (id == ChemicalId("ORE")) {
+        if (id == ChemicalId.ORE) {
             manufactured[id] = manufactured[id]!! + amount
             return manufactured
         }
