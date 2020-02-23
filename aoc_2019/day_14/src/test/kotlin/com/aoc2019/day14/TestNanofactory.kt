@@ -38,4 +38,36 @@ class TestNanofactory {
         assertThat(manufactured.getValue(ChemicalId("ORE")), `is`(31L))
     }
 
+    @Test
+    fun getRequiredAmountInput2() {
+        val factory = Nanofactory.from(javaClass.getResource("/test_input_2.txt").readText())
+        val manufactured = factory.manufactureChemical(ChemicalId("FUEL"), 1L)
+
+        assertThat(manufactured.getValue(ChemicalId("ORE")), `is`(165L))
+    }
+
+    @Test
+    fun getRequiredAmountInput3() {
+        val factory = Nanofactory.from(javaClass.getResource("/test_input_3.txt").readText())
+        val manufactured = factory.manufactureChemical(ChemicalId("FUEL"), 1L)
+
+        assertThat(manufactured.getValue(ChemicalId("ORE")), `is`(13312L))
+    }
+
+    @Test
+    fun getRequiredAmountInput4() {
+        val factory = Nanofactory.from(javaClass.getResource("/test_input_4.txt").readText())
+        val manufactured = factory.manufactureChemical(ChemicalId("FUEL"), 1L)
+
+        assertThat(manufactured.getValue(ChemicalId("ORE")), `is`(180697L))
+    }
+
+    @Test
+    fun getRequiredAmountInput5() {
+        val factory = Nanofactory.from(javaClass.getResource("/test_input_5.txt").readText())
+        val manufactured = factory.manufactureChemical(ChemicalId("FUEL"), 1L)
+
+        assertThat(manufactured.getValue(ChemicalId("ORE")), `is`(2210736L))
+    }
+
 }

@@ -5,4 +5,11 @@ data class Reaction(
         val output: ChemicalAmount
 ) {
 
+    fun getIterationsNeededToProduce(amountToManufacture: Long): Long {
+        return when {
+            amountToManufacture % output.amount == 0L -> amountToManufacture / output.amount
+            else -> (amountToManufacture / output.amount) + 1
+        }
+    }
+
 }
