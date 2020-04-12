@@ -53,13 +53,13 @@ class NavigationComputer(
             computer.iterateUntilFinishedOrWaiting()
 
             // Record result
-            val result = posTypeMap.getValue(computer.outputs.poll())
-            when (result) {
+            when (val result = posTypeMap.getValue(computer.outputs.poll())) {
                 WALL -> knownPositions[nextPosition] = WALL
                 OPEN_SPACE, OXYGEN_SYSTEM -> {
                     currentPosition = nextPosition
                     knownPositions[currentPosition] = result
                 }
+                else -> throw IllegalStateException("Unhandled position type: ${result.name}")
             }
 
             // Update map based on current position

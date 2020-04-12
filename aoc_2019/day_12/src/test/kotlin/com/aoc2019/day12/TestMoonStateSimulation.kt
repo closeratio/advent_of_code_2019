@@ -2,7 +2,7 @@ package com.aoc2019.day12
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class TestMoonStateSimulation {
 

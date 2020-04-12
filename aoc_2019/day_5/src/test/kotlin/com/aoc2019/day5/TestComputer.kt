@@ -3,8 +3,8 @@ package com.aoc2019.day5
 import com.aoc2019.common.computer.Computer
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.hamcrest.core.IsCollectionContaining.hasItems
-import org.junit.Test
+import org.hamcrest.core.IsIterableContaining.hasItems
+import org.junit.jupiter.api.Test
 
 class TestComputer {
 

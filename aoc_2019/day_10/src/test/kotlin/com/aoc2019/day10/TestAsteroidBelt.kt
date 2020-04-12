@@ -3,8 +3,8 @@ package com.aoc2019.day10
 import com.aoc2019.common.math.Vec2i
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.hamcrest.core.IsCollectionContaining.hasItems
-import org.junit.Test
+import org.hamcrest.core.IsIterableContaining.hasItems
+import org.junit.jupiter.api.Test
 
 class TestAsteroidBelt {
 

@@ -5,7 +5,7 @@ import com.aoc2019.common.math.Vec2d.Companion.ZERO
 import com.aoc2019.common.math.toDegrees
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class TestVec2d {
 

@@ -4,7 +4,7 @@ import com.aoc2019.common.computer.Computer
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.greaterThan
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class TestNavigationComputer {
 

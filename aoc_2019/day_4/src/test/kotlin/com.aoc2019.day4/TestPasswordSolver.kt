@@ -4,7 +4,7 @@ import com.aoc2019.day4.PasswordSolver.PasswordValidationStrategy.ANY_DOUBLES
 import com.aoc2019.day4.PasswordSolver.PasswordValidationStrategy.STRICT_DOUBLES
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class TestPasswordSolver {
 
