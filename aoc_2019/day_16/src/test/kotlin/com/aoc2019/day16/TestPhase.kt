@@ -10,39 +10,21 @@ class TestPhase {
 
     @Test
     fun calculateNextPhaseSimpleInput() {
-        val initialPhase = Phase(
-                0,
-                javaClass.getResource("/test_input_1.txt").readText().map { it.toString().toInt() }
-        )
+        val initialPhase = Phase.from(javaClass.getResource("/test_input_1.txt").readText())
 
         val firstPhase = initialPhase.calculateNextPhase(BASE_PATTERN)
-
-        assertThat(firstPhase, `is`(Phase(
-                1,
-                listOf(4, 8, 2, 2, 6, 1, 5, 8)
-        )))
+        assertThat(firstPhase, `is`(Phase.from("48226158", 1)))
 
         val secondPhase = firstPhase.calculateNextPhase(BASE_PATTERN)
-
-        assertThat(secondPhase, `is`(Phase(
-                2,
-                listOf(3, 4, 0, 4, 0, 4, 3, 8)
-        )))
+        assertThat(secondPhase, `is`(Phase.from("34040438", 2)))
 
         val thirdPhase = secondPhase.calculateNextPhase(BASE_PATTERN)
-
-        assertThat(thirdPhase, `is`(Phase(
-                3,
-                listOf(0, 3, 4, 1, 5, 5, 1, 8)
-        )))
+        assertThat(thirdPhase, `is`(Phase.from("03415518", 3)))
     }
 
     @Test
     fun calculateNextPhaseComplexInput1() {
-        var phase = Phase(
-                0,
-                javaClass.getResource("/test_input_2.txt").readText().map { it.toString().toInt() }
-        )
+        var phase = Phase.from(javaClass.getResource("/test_input_2.txt").readText())
 
         repeat(100) {
             phase = phase.calculateNextPhase(BASE_PATTERN)
@@ -56,10 +38,7 @@ class TestPhase {
 
     @Test
     fun calculateNextPhaseComplexInput2() {
-        var phase = Phase(
-                0,
-                javaClass.getResource("/test_input_3.txt").readText().map { it.toString().toInt() }
-        )
+        var phase = Phase.from(javaClass.getResource("/test_input_3.txt").readText())
 
         repeat(100) {
             phase = phase.calculateNextPhase(BASE_PATTERN)
@@ -73,10 +52,7 @@ class TestPhase {
 
     @Test
     fun calculateNextPhaseComplexInput3() {
-        var phase = Phase(
-                0,
-                javaClass.getResource("/test_input_4.txt").readText().map { it.toString().toInt() }
-        )
+        var phase = Phase.from(javaClass.getResource("/test_input_4.txt").readText())
 
         repeat(100) {
             phase = phase.calculateNextPhase(BASE_PATTERN)

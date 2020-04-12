@@ -2,8 +2,8 @@ package com.aoc2019.day16
 
 import kotlin.math.absoluteValue
 
-data class Phase(
-        val index: Long,
+data class Phase private constructor(
+        val index: Int,
         val values: List<Int>
 ) {
 
@@ -20,6 +20,20 @@ data class Phase(
         return Phase(
                 index + 1,
                 output
+        )
+    }
+
+    companion object {
+        fun from(
+                input: String,
+                index: Int = 0,
+                repeat: Int = 1
+        ): Phase = Phase(
+                index,
+                input.map { it.toString().toInt() }
+                        .let { values ->
+                            (1..repeat).flatMap { values }
+                        }
         )
     }
 

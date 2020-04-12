@@ -5,10 +5,7 @@ object Runner {
     val BASE_PATTERN = Pattern(listOf(0, 1, 0, -1))
 
     fun runPart1() {
-        var phase = Phase(
-                0,
-                javaClass.getResource("/input.txt").readText().map { it.toString().toInt() }
-        )
+        var phase = Phase.from(javaClass.getResource("/input.txt").readText())
 
         repeat(100) {
             phase = phase.calculateNextPhase(BASE_PATTERN)
