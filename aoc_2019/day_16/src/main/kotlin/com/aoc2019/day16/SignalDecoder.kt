@@ -1,5 +1,7 @@
 package com.aoc2019.day16
 
+import kotlin.math.absoluteValue
+
 class SignalDecoder(
         val initialPhase: Phase
 ) {
@@ -9,17 +11,16 @@ class SignalDecoder(
             .joinToString("")
             .toInt()
 
-    fun calculateMessage(basePattern: Pattern): String {
-        var phase = initialPhase
+    fun calculateMessage(): String {
+        val values = initialPhase.values.drop(offset).toTypedArray()
 
         repeat(100) {
-            phase = initialPhase.calculateNextPhase(basePattern)
+            values.indices.reversed().fold(0) { acc, index ->
+                (acc + values[index]).also { values[index] = (it % 10).absoluteValue }
+            }
         }
 
-        return phase.values
-                .drop(offset)
-                .take(8)
-                .joinToString("")
+        return values.take(8).joinToString("")
     }
 
 }

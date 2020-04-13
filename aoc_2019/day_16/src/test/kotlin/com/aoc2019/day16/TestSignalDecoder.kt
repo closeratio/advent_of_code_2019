@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test
 
 class TestSignalDecoder {
 
-    val BASE_PATTERN = Pattern(listOf(0, 1, 0, -1))
-
     private val decoderForInput1 = SignalDecoder(Phase.from(
             javaClass.getResource("/test_input_5.txt").readText(),
             repeat = 10_000
@@ -32,7 +30,9 @@ class TestSignalDecoder {
 
     @Test
     fun calculateMessage() {
-        assertThat(decoderForInput1.calculateMessage(BASE_PATTERN), `is`("84462026"))
+        assertThat(decoderForInput1.calculateMessage(), `is`("84462026"))
+        assertThat(decoderForInput2.calculateMessage(), `is`("78725270"))
+        assertThat(decoderForInput3.calculateMessage(), `is`("53553731"))
     }
 
 }
