@@ -1,27 +1,23 @@
 package com.aoc2019.day18
 
 import com.aoc2019.common.math.Vec2i
+import com.aoc2019.day18.StateTransitionCache.StateTransitionKey
 import java.util.*
+import kotlin.Comparator
 
-class WorldState(
-        val player: Player,
+data class WorldState(
+        val playerState: PlayerState,
         val maze: Maze,
         val keys: Set<Key>,
         val doors: Set<Door>
 ) {
 
-    fun movePlayer(
-            newPosition: Vec2i,
-            newSteps: Long
-    ): WorldState = WorldState(
-            player.withPosition(newPosition).withStepsTaken(newSteps),
-            maze,
-            keys,
-            doors
-    )
-
-    fun obtainKey(key: Key): WorldState = WorldState(
-            player.withKey(key),
+    fun obtainKey(key: Key, newSteps: Long): WorldState = WorldState(
+            PlayerState(
+                    key.position,
+                    playerState.heldKeys + key,
+                    newSteps
+            ),
             maze,
             keys.filter { it != key }.toSet(),
             doors.filter { !it.worksWith(key) }.toSet()
@@ -29,39 +25,27 @@ class WorldState(
 
     fun isCompleted(): Boolean = keys.isEmpty()
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is WorldState) return false
-
-        if (player != other.player) return false
-        if (maze != other.maze) return false
-        if (keys != other.keys) return false
-        if (doors != other.doors) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = player.hashCode()
-        result = 31 * result + maze.hashCode()
-        result = 31 * result + keys.hashCode()
-        result = 31 * result + doors.hashCode()
-        return result
-    }
-
-    fun getAdjacentStates(): Set<WorldState> {
-        return keys.mapNotNull { stateTransitionExists(it) }.toSet()
-    }
+    fun getAdjacentStates(stateTransitionCache: StateTransitionCache): Set<WorldState> = keys
+            .mapNotNull { stateTransitionExists(it, stateTransitionCache) }
+            .toSet()
 
     /**
      * Returns -1 if a route cannot be found
      */
-    fun stateTransitionExists(targetKey: Key): WorldState? {
-        val openStates = PriorityQueue<Player>(Comparator.comparingLong { it.stepsTaken })
-        val visitedPositions = hashSetOf(player.position)
+    private fun stateTransitionExists(
+            targetKey: Key,
+            stateTransitionCache: StateTransitionCache
+    ): WorldState? {
+        val key = StateTransitionKey(playerState, targetKey)
+        if (key in stateTransitionCache.cache) {
+            return stateTransitionCache.cache.getValue(key).second
+        }
+
+        val openStates = PriorityQueue<PlayerState>(Comparator.comparingLong { it.stepsTaken })
+        val visitedPositions = hashSetOf(playerState.position)
 
         openStates.addAll(filterAdjacentPlayerStates(
-                player.adjacentStates(),
+                playerState.adjacentStates(),
                 targetKey,
                 visitedPositions
         ))
@@ -75,8 +59,9 @@ class WorldState(
             visitedPositions.add(state.position)
 
             if (state.position == targetKey.position) {
-                return movePlayer(state.position, state.stepsTaken)
-                        .obtainKey(targetKey)
+                val result = obtainKey(targetKey, state.stepsTaken)
+                stateTransitionCache.cache[key] = true to result
+                return result
             }
 
             openStates.addAll(filterAdjacentPlayerStates(
@@ -86,19 +71,25 @@ class WorldState(
             ))
         }
 
+        stateTransitionCache.cache[key] = false to null
+
         return null
     }
 
-    fun filterAdjacentPlayerStates(
-            states: Set<Player>,
+    private fun filterAdjacentPlayerStates(
+            states: Set<PlayerState>,
             targetKey: Key,
             visitedPositions: Set<Vec2i>
-    ): Set<Player> = states
-            .asSequence()
-            .filter { it.position !in visitedPositions }
-            .filter { it.position !in maze.wallMap }
-            .filter { state -> !doors.any { it.position == state.position } }
-            .filter { state -> !keys.filter { it != targetKey }.any { it.position == state.position } }
+    ): Set<PlayerState> = states
+            .filter { state ->
+                when {
+                    state.position in visitedPositions -> false
+                    state.position in maze.walls -> false
+                    doors.any { it.position == state.position } -> false
+                    keys.filter { it != targetKey }.any { it.position == state.position } -> false
+                    else -> true
+                }
+            }
             .toSet()
 
     companion object {
@@ -116,7 +107,7 @@ class WorldState(
                             } else {
                                 when (character) {
                                     '#' -> Wall(vec)
-                                    '@' -> Player(vec, emptySet(), 0)
+                                    '@' -> PlayerState(vec, emptySet(), 0)
 
                                     else -> null
                                 }
@@ -126,13 +117,15 @@ class WorldState(
                     .flatten()
 
             return WorldState(
-                    objects.filterIsInstance<Player>().first(),
-                    Maze(objects.filterIsInstance<Wall>().toSet()),
+                    objects.filterIsInstance<PlayerState>().first(),
+                    Maze(objects.filterIsInstance<Wall>().associateBy { it.position }),
                     objects.filterIsInstance<Key>().toSet(),
                     objects.filterIsInstance<Door>().toSet()
             )
         }
 
     }
+
+
 
 }

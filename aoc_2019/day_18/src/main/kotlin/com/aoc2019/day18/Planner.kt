@@ -1,18 +1,22 @@
 package com.aoc2019.day18
 
+import com.aoc2019.day18.PlayerState.SubState
 import java.util.*
-import kotlin.collections.HashSet
+import kotlin.collections.LinkedHashSet
 
 class Planner(
         val initialState: WorldState
 ) {
 
+    private val stateTransitionCache = StateTransitionCache()
+    private val bestSubstateMap = HashMap<SubState, Long>()
+
     fun calculateSteps(): Long {
-        val openStates = PriorityQueue<WorldState>(Comparator.comparingLong { it.player.stepsTaken })
-        val closedStates = HashSet<WorldState>()
+        val openStates = PriorityQueue<WorldState>(Comparator.comparingLong { it.playerState.stepsTaken })
+        val closedStates = LinkedHashSet<WorldState>()
 
         // Populate initial open states
-        openStates.addAll(initialState.getAdjacentStates())
+        openStates.addAll(initialState.getAdjacentStates(stateTransitionCache))
 
         while (!openStates.isEmpty()) {
             val state = openStates.remove()
@@ -20,13 +24,19 @@ class Planner(
             if (state in closedStates) {
                 continue
             }
-            closedStates.add(state)
 
             if (state.isCompleted()) {
-                return state.player.stepsTaken
+                return state.playerState.stepsTaken
             }
 
-            openStates.addAll(state.getAdjacentStates().filter { it !in closedStates })
+            bestSubstateMap[state.playerState.getSubstate()] = state.playerState.stepsTaken
+            closedStates.add(state)
+
+            val adjacent = state.getAdjacentStates(stateTransitionCache)
+            openStates.addAll(adjacent
+                    .filter { it !in closedStates }
+                    .filter { it.playerState.getSubstate() !in bestSubstateMap }
+            )
         }
 
         throw IllegalStateException("Unable to find route")

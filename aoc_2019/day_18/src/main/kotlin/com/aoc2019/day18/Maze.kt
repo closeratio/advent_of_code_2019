@@ -1,9 +1,7 @@
 package com.aoc2019.day18
 
-class Maze(
-        val walls: Set<Wall>
-) {
+import com.aoc2019.common.math.Vec2i
 
-    val wallMap = walls.associateBy { it.position }
-
-}
+data class Maze(
+        val walls: Map<Vec2i, Wall>
+)
