@@ -14,7 +14,7 @@ class TestWorldState {
 
     @Test
     fun parse() {
-        val ws = WorldState.parse(javaClass.getResource("/test_input_1.txt").readText())
+        val (ws, maze) = WorldState.parse(javaClass.getResource("/test_input_1.txt").readText())
 
         assertThat(ws.playerState, `is`(PlayerState(Vec2i(15, 1), setOf(), 0)))
 
@@ -24,8 +24,8 @@ class TestWorldState {
         assertThat(ws.doors, hasSize(5))
         assertThat(ws.doors, hasItem(Door(Vec2i(9, 1), "C")))
 
-        assertThat(ws.maze.walls, aMapWithSize(75))
-        assertThat(ws.maze.walls, hasValue(Wall(ZERO)))
+        assertThat(maze.walls, aMapWithSize(75))
+        assertThat(maze.walls, hasValue(Wall(ZERO)))
     }
 
 }

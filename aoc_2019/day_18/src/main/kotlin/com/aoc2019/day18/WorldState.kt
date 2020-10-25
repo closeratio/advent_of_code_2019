@@ -7,7 +7,6 @@ import kotlin.Comparator
 
 data class WorldState(
         val playerState: PlayerState,
-        val maze: Maze,
         val keys: Set<Key>,
         val doors: Set<Door>
 ) {
@@ -18,15 +17,17 @@ data class WorldState(
                     playerState.heldKeys + key,
                     newSteps
             ),
-            maze,
             keys.filter { it != key }.toSet(),
             doors.filter { !it.worksWith(key) }.toSet()
     )
 
     fun isCompleted(): Boolean = keys.isEmpty()
 
-    fun getAdjacentStates(stateTransitionCache: StateTransitionCache): Set<WorldState> = keys
-            .mapNotNull { stateTransitionExists(it, stateTransitionCache) }
+    fun getAdjacentStates(
+            stateTransitionCache: StateTransitionCache,
+            maze: Maze
+    ): Set<WorldState> = keys
+            .mapNotNull { stateTransitionExists(it, stateTransitionCache, maze) }
             .toSet()
 
     /**
@@ -34,7 +35,8 @@ data class WorldState(
      */
     private fun stateTransitionExists(
             targetKey: Key,
-            stateTransitionCache: StateTransitionCache
+            stateTransitionCache: StateTransitionCache,
+            maze: Maze
     ): WorldState? {
         val key = StateTransitionKey(playerState, targetKey)
         if (key in stateTransitionCache.cache) {
@@ -42,19 +44,15 @@ data class WorldState(
         }
 
         val openStates = PriorityQueue<PlayerState>(Comparator.comparingLong { it.stepsTaken })
-        val visitedPositions = hashSetOf(playerState.position)
+        val visitedPositions = HashSet<Vec2i>()
 
-        openStates.addAll(filterAdjacentPlayerStates(
-                playerState.adjacentStates(),
-                targetKey,
-                visitedPositions
-        ))
+        openStates.add(playerState)
 
         while (openStates.isNotEmpty()) {
             val state = openStates.remove()
 
             if (state.position in visitedPositions) {
-                continue;
+                continue
             }
             visitedPositions.add(state.position)
 
@@ -65,9 +63,15 @@ data class WorldState(
             }
 
             openStates.addAll(filterAdjacentPlayerStates(
-                    state.adjacentStates(),
+                    maze.adjacentSpaces
+                            .getValue(state.position)
+                            .map {
+                                PlayerState(it, state.heldKeys, state.stepsTaken + 1)
+                            }
+                            .toSet(),
                     targetKey,
-                    visitedPositions
+                    visitedPositions,
+                    maze
             ))
         }
 
@@ -79,12 +83,13 @@ data class WorldState(
     private fun filterAdjacentPlayerStates(
             states: Set<PlayerState>,
             targetKey: Key,
-            visitedPositions: Set<Vec2i>
+            visitedPositions: Set<Vec2i>,
+            maze: Maze
     ): Set<PlayerState> = states
             .filter { state ->
                 when {
+//                    state.position in maze.walls -> false
                     state.position in visitedPositions -> false
-                    state.position in maze.walls -> false
                     doors.any { it.position == state.position } -> false
                     keys.filter { it != targetKey }.any { it.position == state.position } -> false
                     else -> true
@@ -94,7 +99,7 @@ data class WorldState(
 
     companion object {
 
-        fun parse(input: String): WorldState {
+        fun parse(input: String): Pair<WorldState, Maze> {
             val objects = input.trim()
                     .split("\n")
                     .mapIndexed { y, line ->
@@ -118,14 +123,14 @@ data class WorldState(
 
             return WorldState(
                     objects.filterIsInstance<PlayerState>().first(),
-                    Maze(objects.filterIsInstance<Wall>().associateBy { it.position }),
                     objects.filterIsInstance<Key>().toSet(),
                     objects.filterIsInstance<Door>().toSet()
+            ) to Maze(
+                    objects.filterIsInstance<Wall>().associateBy { it.position }
             )
         }
 
     }
-
 
 
 }

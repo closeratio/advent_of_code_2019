@@ -2,44 +2,48 @@ package com.aoc2019.day18
 
 import com.aoc2019.day18.PlayerState.SubState
 import java.util.*
-import kotlin.collections.LinkedHashSet
+import kotlin.Long.Companion.MAX_VALUE
 
 class Planner(
-        val initialState: WorldState
+        val initialState: WorldState,
+        val maze: Maze
 ) {
 
     private val stateTransitionCache = StateTransitionCache()
-    private val bestSubstateMap = HashMap<SubState, Long>()
+    private val bestSubStateMap = HashMap<SubState, Long>()
+    private var bestMinimumSteps: Long = MAX_VALUE
 
     fun calculateSteps(): Long {
-        val openStates = PriorityQueue<WorldState>(Comparator.comparingLong { it.playerState.stepsTaken })
-        val closedStates = LinkedHashSet<WorldState>()
+        val solutions = initialState
+                .getAdjacentStates(stateTransitionCache, maze)
+                .mapNotNull { evaluateState(it) };
 
-        // Populate initial open states
-        openStates.addAll(initialState.getAdjacentStates(stateTransitionCache))
+        return solutions.minOrNull()!!
+    }
 
-        while (!openStates.isEmpty()) {
-            val state = openStates.remove()
-
-            if (state in closedStates) {
-                continue
-            }
-
-            if (state.isCompleted()) {
-                return state.playerState.stepsTaken
-            }
-
-            bestSubstateMap[state.playerState.getSubstate()] = state.playerState.stepsTaken
-            closedStates.add(state)
-
-            val adjacent = state.getAdjacentStates(stateTransitionCache)
-            openStates.addAll(adjacent
-                    .filter { it !in closedStates }
-                    .filter { it.playerState.getSubstate() !in bestSubstateMap }
-            )
+    private fun evaluateState(worldState: WorldState): Long? {
+        val substate = worldState.playerState.getSubstate()
+        if (worldState.playerState.stepsTaken >= bestSubStateMap.getOrDefault(substate, MAX_VALUE)) {
+            return null
         }
 
-        throw IllegalStateException("Unable to find route")
+        bestSubStateMap[worldState.playerState.getSubstate()] = worldState.playerState.stepsTaken
+
+        if (worldState.playerState.stepsTaken >= bestMinimumSteps) {
+            return null
+        }
+
+        if (worldState.isCompleted()) {
+            bestMinimumSteps = worldState.playerState.stepsTaken
+            println(bestMinimumSteps)
+            return worldState.playerState.stepsTaken
+        }
+
+        return worldState
+                .getAdjacentStates(stateTransitionCache, maze)
+                .sortedBy { it.playerState.stepsTaken }
+                .mapNotNull { evaluateState(it) }
+                .minOrNull()
     }
 
 }

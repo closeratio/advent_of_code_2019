@@ -3,7 +3,9 @@ package com.aoc2019.day18
 object Runner {
 
     fun runPart1() {
-        val planner = Planner(WorldState.parse(javaClass.getResource("/input.txt").readText()))
+        val (worldState, maze) = WorldState.parse(javaClass.getResource("/input.txt").readText())
+
+        val planner = Planner(worldState, maze)
 
         val steps = planner.calculateSteps()
         println(steps)

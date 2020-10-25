@@ -8,7 +8,8 @@ class TestPlanner {
 
     @Test
     fun calculateStepsInput1() {
-        val planner = Planner(WorldState.parse(javaClass.getResource("/test_input_1.txt").readText()))
+        val (worldState, maze) = WorldState.parse(javaClass.getResource("/test_input_1.txt").readText())
+        val planner = Planner(worldState, maze)
 
         val result = planner.calculateSteps()
         assertThat(result, `is`(86L))
@@ -16,7 +17,8 @@ class TestPlanner {
 
     @Test
     fun calculateStepsInput2() {
-        val planner = Planner(WorldState.parse(javaClass.getResource("/test_input_2.txt").readText()))
+        val (worldState, maze) = WorldState.parse(javaClass.getResource("/test_input_2.txt").readText())
+        val planner = Planner(worldState, maze)
 
         val result = planner.calculateSteps()
         assertThat(result, `is`(132L))
@@ -24,7 +26,8 @@ class TestPlanner {
 
     @Test
     fun calculateStepsInput3() {
-        val planner = Planner(WorldState.parse(javaClass.getResource("/test_input_3.txt").readText()))
+        val (worldState, maze) = WorldState.parse(javaClass.getResource("/test_input_3.txt").readText())
+        val planner = Planner(worldState, maze)
 
         val result = planner.calculateSteps()
         assertThat(result, `is`(136L))
@@ -32,7 +35,8 @@ class TestPlanner {
 
     @Test
     fun calculateStepsInput4() {
-        val planner = Planner(WorldState.parse(javaClass.getResource("/test_input_4.txt").readText()))
+        val (worldState, maze) = WorldState.parse(javaClass.getResource("/test_input_4.txt").readText())
+        val planner = Planner(worldState, maze)
 
         val result = planner.calculateSteps()
         assertThat(result, `is`(81L))
