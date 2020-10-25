@@ -16,7 +16,7 @@ class TestWorldState {
     fun parse() {
         val (ws, maze) = WorldState.parse(javaClass.getResource("/test_input_1.txt").readText())
 
-        assertThat(ws.playerState, `is`(PlayerState(Vec2i(15, 1), setOf(), 0)))
+        assertThat(ws.robotState, `is`(RobotState(setOf(Robot(Vec2i(15, 1), 0)), setOf())))
 
         assertThat(ws.keys, hasSize(6))
         assertThat(ws.keys, hasItem(Key(Vec2i(7, 1), "e")))

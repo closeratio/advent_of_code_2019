@@ -6,16 +6,19 @@ import kotlin.Comparator
 import kotlin.collections.HashSet
 
 data class WorldState(
-        val playerState: PlayerState,
+        val robotState: RobotState,
         val keys: Set<Key>,
         val doors: Set<Door>
 ) {
 
-    fun obtainKey(key: Key, newSteps: Long): WorldState = WorldState(
-            PlayerState(
-                    key.position,
-                    playerState.heldKeys + key,
-                    newSteps
+    fun obtainKey(
+            robot: Robot,
+            key: Key,
+            newSteps: Long
+    ): WorldState = WorldState(
+            RobotState(
+                    robotState.robots.filter { it != robot }.toSet() + Robot(key.position, newSteps),
+                    robotState.heldKeys + key
             ),
             keys.filter { it != key }.toSet(),
             doors.filter { !it.worksWith(key) }.toSet()
@@ -24,18 +27,15 @@ data class WorldState(
     fun isCompleted(): Boolean = keys.isEmpty()
 
     fun getAdjacentStates(
-            availableKeyCache: AvailableKeyCache,
+            maze: Maze
+    ): Set<WorldState> = robotState.robots
+            .flatMap { getAdjacentStates(it, maze) }
+            .toSet()
+
+    private fun getAdjacentStates(
+            robot: Robot,
             maze: Maze
     ): Set<WorldState> {
-        val cacheKey = playerState.getSubstate()
-
-        // Check to see if we've computed the adjacent states already
-        if (cacheKey in availableKeyCache.cache) {
-            return availableKeyCache.cache
-                    .getValue(cacheKey)
-                    .map { obtainKey(it.first, playerState.stepsTaken + it.second) }
-                    .toSet()
-        }
 
         // Setup some data structures to keep track which keys we've found and which ones are still left to find as well
         // as the positions of the doors and keys.
@@ -47,8 +47,8 @@ data class WorldState(
 
         // Open states are ones we've not yet evaluated, and visited positions are kept track of to make sure we don't
         // try the same position twice
-        val openStates = PriorityQueue<PlayerState>(Comparator.comparingLong { it.stepsTaken })
-        openStates.add(playerState)
+        val openStates = PriorityQueue<Robot>(Comparator.comparingLong { it.stepsTaken })
+        openStates.add(robot)
         val visitedPositions = HashSet<Vec2i>()
 
         // Keep iterating until we've exausted all the positions (that we can reach) or all the keys have been found
@@ -62,27 +62,25 @@ data class WorldState(
             visitedPositions.add(state.position)
 
             // If we're currently "on a door", then we can't go any further
-            // If we're "on a hey", then awesome, we've found a key, add it to the list (and don't go any further)
+            // If we're "on a key", then awesome, we've found a key, add it to the list (and don't go any further)
             // Otherwise, we must just be in a "normal space" and should add the adjacent spaces to the list of open
             // states
             if (state.position in doorPositions) {
                 continue
             } else if (state.position in keyMap) {
                 val key = keyMap.getValue(state.position)
-                val delta = state.stepsTaken - playerState.stepsTaken
+                val delta = state.stepsTaken - robotState.stepsTaken
                 remainingKeys.remove(key)
                 foundKeys.add(key to delta)
             } else {
                 openStates.addAll(maze.adjacentSpaces
                         .getValue(state.position)
-                        .map { PlayerState(it, state.heldKeys, state.stepsTaken + 1) })
+                        .map { Robot(it, state.stepsTaken + 1) })
             }
         }
 
-        availableKeyCache.cache[cacheKey] = foundKeys
-
         return foundKeys
-                .map { obtainKey(it.first, playerState.stepsTaken + it.second) }
+                .map { obtainKey(robot, it.first, robotState.stepsTaken + it.second) }
                 .toSet()
     }
 
@@ -101,7 +99,7 @@ data class WorldState(
                             } else {
                                 when (character) {
                                     '#' -> Wall(vec)
-                                    '@' -> PlayerState(vec, emptySet(), 0)
+                                    '@' -> Robot(vec, 0)
                                     else -> null
                                 }
                             }
@@ -110,7 +108,7 @@ data class WorldState(
                     .flatten()
 
             return WorldState(
-                    objects.filterIsInstance<PlayerState>().first(),
+                    RobotState(objects.filterIsInstance<Robot>().toSet(), setOf()),
                     objects.filterIsInstance<Key>().toSet(),
                     objects.filterIsInstance<Door>().toSet()
             ) to Maze(
