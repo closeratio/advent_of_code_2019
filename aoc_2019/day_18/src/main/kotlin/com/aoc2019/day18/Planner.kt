@@ -9,7 +9,7 @@ class Planner(
         val maze: Maze
 ) {
 
-    private val stateTransitionCache = StateTransitionCache()
+    private val stateTransitionCache = AvailableKeyCache()
     private val bestSubStateMap = HashMap<SubState, Long>()
     private var bestMinimumSteps: Long = MAX_VALUE
 
