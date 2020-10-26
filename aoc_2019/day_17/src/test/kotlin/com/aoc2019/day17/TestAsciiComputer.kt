@@ -8,12 +8,22 @@ import org.junit.jupiter.api.Test
 class TestAsciiComputer {
 
     @Test
-    fun execute() {
+    fun getScaffolMap() {
         val computer = AsciiComputer.from(javaClass.getResource("/input_1.txt").readText())
-        val result = computer.execute()
+        val result = computer.getScaffoldMap()
 
         assertThat(result.scaffold, hasSize(greaterThan(0)))
         assertThat(result.alignmentParameters().sum(), greaterThan(0))
+    }
+
+    @Test
+    fun findRoute() {
+        val computer = AsciiComputer.from(javaClass.getResource("/input_1.txt").readText())
+        val result = computer.getScaffoldMap().findRoute()
+
+        println(result.map { it.toShortString() }.joinToString(","))
+
+        assertThat(result, hasSize(greaterThan(0)))
     }
 
 

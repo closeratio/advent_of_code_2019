@@ -4,13 +4,19 @@ object Runner {
 
     fun runPart1() {
         val computer = AsciiComputer.from(javaClass.getResource("/input_1.txt").readText())
-        val state = computer.execute()
+        val state = computer.getScaffoldMap()
 
         println(state.alignmentParameters().sum())
+    }
+
+    fun runPart2() {
+        val computer = AsciiComputer.from(javaClass.getResource("/input_1.txt").readText())
+
+        println(computer.traverseScaffold())
     }
 
 }
 
 fun main() {
-    Runner.runPart1()
+    Runner.runPart2()
 }
