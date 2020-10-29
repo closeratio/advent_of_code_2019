@@ -2,6 +2,8 @@ package com.aoc2019.day20
 
 import com.aoc2019.common.math.Vec2i
 import java.io.IOException
+import java.util.*
+import kotlin.collections.HashSet
 
 data class Maze(
         val walls: Map<Vec2i, Wall>,
@@ -26,6 +28,33 @@ data class Maze(
                 space to (spaces + spacesThroughPortals).toSet()
             }
             .toMap()
+
+    fun calculateShortestRoute(): Int {
+        val openStates = PriorityQueue<VisitedSpace>(Comparator.comparingInt { it.steps })
+        openStates.add(VisitedSpace(start, 0))
+
+        val closedStates = HashSet<OpenSpace>()
+
+        while (openStates.isNotEmpty()) {
+            val current = openStates.remove()
+            if (current.space in closedStates) {
+                continue
+            }
+
+            closedStates.add(current.space)
+
+            if (current.space == destination) {
+                return current.steps
+            }
+
+            openStates.addAll(adjacentOpenSpaces.getValue(current.space)
+                    .filter { it !in closedStates }
+                    .map { VisitedSpace(it, current.steps + 1) }
+            )
+        }
+
+        throw IllegalStateException("Unable to find path from $start to $destination")
+    }
 
     companion object {
 
@@ -78,14 +107,10 @@ data class Maze(
                     .toMap()
 
             return openSpaces.values
-                    .map { it to it.position.adjacentManhattanPositions() }
-                    .filter { (_, adjacent) ->
-                        adjacent.any {
-                            it !in openSpaces && it !in walls
-                        }
-                    }
-                    .map { (openSpace, adjacent) ->
-                        val portalPos = adjacent.find { it !in openSpaces && it !in walls }!!
+                    .flatMap { space -> space.position.adjacentManhattanPositions().map { space to it } }
+                    .filter { (_, adjacent) -> adjacent !in openSpaces }
+                    .filter { (_, adjacent) -> adjacent !in walls }
+                    .map { (openSpace, portalPos) ->
                         val id = when (portalPos) {
                             openSpace.position.up() -> charMap.getValue(portalPos.up()).toString() + charMap.getValue(portalPos)
                             openSpace.position.down() -> charMap.getValue(portalPos).toString() + charMap.getValue(portalPos.down())

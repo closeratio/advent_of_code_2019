@@ -2,6 +2,7 @@ package com.aoc2019.day20
 
 import com.aoc2019.common.math.Vec2i
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.`is`
 import org.hamcrest.collection.IsIterableWithSize.iterableWithSize
 import org.hamcrest.collection.IsMapWithSize.aMapWithSize
 import org.hamcrest.core.IsIterableContaining.hasItem
@@ -29,6 +30,20 @@ class TestMaze {
         assertThat(maze.portals, iterableWithSize(20))
 
         assertThat(maze.portals, hasItem(Portal("AS", OpenSpace(Vec2i(17, 8)))))
+    }
+
+    @Test
+    fun calculateShortestRouteInput1() {
+        val maze = Maze.from(javaClass.getResource("/test_input_1.txt").readText())
+        val result = maze.calculateShortestRoute()
+        assertThat(result, `is`(23))
+    }
+
+    @Test
+    fun calculateShortestRouteInput2() {
+        val maze = Maze.from(javaClass.getResource("/test_input_2.txt").readText())
+        val result = maze.calculateShortestRoute()
+        assertThat(result, `is`(58))
     }
 
 }
