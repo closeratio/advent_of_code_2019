@@ -8,7 +8,6 @@ import java.util.*
 import kotlin.collections.HashSet
 
 open class Maze(
-        val level: Int,
         val walls: Map<Vec2i, Wall>,
         val openSpaces: Map<Vec2i, OpenSpace>,
         val portals: Set<Portal>,
@@ -42,7 +41,7 @@ open class Maze(
             recursive: Boolean = false
     ): Int {
         val openStates = PriorityQueue<VisitedSpace>(Comparator.comparingInt { it.steps })
-        openStates.add(VisitedSpace(start, 0, level))
+        openStates.add(VisitedSpace(start, 0, 0))
 
         val closedStates = HashSet<VisitedSpace>()
 
@@ -52,13 +51,13 @@ open class Maze(
                 continue
             }
 
-            if (current.level >= 100) {
+            if (current.level >= 1000) {
                 throw IllegalStateException("Passed threshold which suggests no route exists")
             }
 
             closedStates.add(current)
 
-            if (current.space == destination && current.level == level) {
+            if (current.space == destination && current.level == 0) {
                 return current.steps
             }
 
@@ -70,12 +69,12 @@ open class Maze(
 
             openStates.addAll(adjacentSpacesThroughPortals
                     .getOrDefault(current.space, setOf())
-                    .map {
+                    .map { portal ->
                         if (recursive) {
-                            val newLevel = if (it.type == OUTER) current.level - 1 else current.level + 1
-                            VisitedSpace(it.nextTo, current.steps + 1, newLevel)
+                            val newLevel = if (portal.type == INNER) current.level - 1 else current.level + 1
+                            VisitedSpace(portal.nextTo, current.steps + 1, newLevel)
                         } else {
-                            VisitedSpace(it.nextTo, current.steps + 1, current.level)
+                            VisitedSpace(portal.nextTo, current.steps + 1, current.level)
                         }
                     }
                     .filter { it !in closedStates }
@@ -96,7 +95,6 @@ open class Maze(
             val end = portals.find { it.id == "ZZ" }!!
 
             return Maze(
-                    0,
                     walls,
                     openSpaces,
                     portals.filter { it != start && it != end }.toSet(),

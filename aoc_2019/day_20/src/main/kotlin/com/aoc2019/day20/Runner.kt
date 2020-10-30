@@ -7,8 +7,13 @@ object Runner {
         println(maze.calculateShortestRoute())
     }
 
+    fun runPart2() {
+        val maze = Maze.from(javaClass.getResource("/input.txt").readText())
+        println(maze.calculateShortestRoute(true))
+    }
+
 }
 
 fun main() {
-    Runner.runPart1()
+    Runner.runPart2()
 }
