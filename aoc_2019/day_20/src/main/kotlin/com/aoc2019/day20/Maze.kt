@@ -1,11 +1,14 @@
 package com.aoc2019.day20
 
 import com.aoc2019.common.math.Vec2i
+import com.aoc2019.day20.PortalType.INNER
+import com.aoc2019.day20.PortalType.OUTER
 import java.io.IOException
 import java.util.*
 import kotlin.collections.HashSet
 
-data class Maze(
+open class Maze(
+        val level: Int,
         val walls: Map<Vec2i, Wall>,
         val openSpaces: Map<Vec2i, OpenSpace>,
         val portals: Set<Portal>,
@@ -13,43 +16,70 @@ data class Maze(
         val destination: OpenSpace
 ) {
 
-    val adjacentOpenSpaces: Map<OpenSpace, Set<OpenSpace>> = openSpaces
+    val adjacentSpaces: Map<OpenSpace, Set<OpenSpace>> = openSpaces
             .values
             .map { space ->
-                val spaces = space.position.adjacentManhattanPositions().mapNotNull { openSpaces[it] }
-                val spacesThroughPortals = portals
+                space to space.position
+                        .adjacentManhattanPositions()
+                        .mapNotNull { openSpaces[it] }
+                        .toSet()
+            }
+            .toMap()
+
+    val adjacentSpacesThroughPortals: Map<OpenSpace, Set<Portal>> = openSpaces
+            .values
+            .associateWith { space ->
+                portals
                         .filter { it.nextTo == space }
                         .map { portal ->
                             portals.filter { it != portal }
                                     .find { it.id == portal.id }!!
-                                    .nextTo
                         }
-
-                space to (spaces + spacesThroughPortals).toSet()
+                        .toSet()
             }
-            .toMap()
 
-    fun calculateShortestRoute(): Int {
+    fun calculateShortestRoute(
+            recursive: Boolean = false
+    ): Int {
         val openStates = PriorityQueue<VisitedSpace>(Comparator.comparingInt { it.steps })
-        openStates.add(VisitedSpace(start, 0))
+        openStates.add(VisitedSpace(start, 0, level))
 
-        val closedStates = HashSet<OpenSpace>()
+        val closedStates = HashSet<VisitedSpace>()
 
         while (openStates.isNotEmpty()) {
             val current = openStates.remove()
-            if (current.space in closedStates) {
+            if (current in closedStates) {
                 continue
             }
 
-            closedStates.add(current.space)
+            if (current.level >= 100) {
+                throw IllegalStateException("Passed threshold which suggests no route exists")
+            }
 
-            if (current.space == destination) {
+            closedStates.add(current)
+
+            if (current.space == destination && current.level == level) {
                 return current.steps
             }
 
-            openStates.addAll(adjacentOpenSpaces.getValue(current.space)
+            openStates.addAll(adjacentSpaces
+                    .getValue(current.space)
+                    .map { VisitedSpace(it, current.steps + 1, current.level) }
                     .filter { it !in closedStates }
-                    .map { VisitedSpace(it, current.steps + 1) }
+            )
+
+            openStates.addAll(adjacentSpacesThroughPortals
+                    .getOrDefault(current.space, setOf())
+                    .map {
+                        if (recursive) {
+                            val newLevel = if (it.type == OUTER) current.level - 1 else current.level + 1
+                            VisitedSpace(it.nextTo, current.steps + 1, newLevel)
+                        } else {
+                            VisitedSpace(it.nextTo, current.steps + 1, current.level)
+                        }
+                    }
+                    .filter { it !in closedStates }
+                    .filter { it.level >= 0 }
             )
         }
 
@@ -66,6 +96,7 @@ data class Maze(
             val end = portals.find { it.id == "ZZ" }!!
 
             return Maze(
+                    0,
                     walls,
                     openSpaces,
                     portals.filter { it != start && it != end }.toSet(),
@@ -106,25 +137,41 @@ data class Maze(
                     }
                     .toMap()
 
+            val minMaxX = setOf(
+                    openSpaces.keys.minByOrNull { it.x }!!.x,
+                    openSpaces.keys.maxByOrNull { it.x }!!.x
+            )
+
+            val minMaxY = setOf(
+                    openSpaces.keys.minByOrNull { it.y }!!.y,
+                    openSpaces.keys.maxByOrNull { it.y }!!.y
+            )
+
             return openSpaces.values
                     .flatMap { space -> space.position.adjacentManhattanPositions().map { space to it } }
                     .filter { (_, adjacent) -> adjacent !in openSpaces }
                     .filter { (_, adjacent) -> adjacent !in walls }
                     .map { (openSpace, portalPos) ->
+                        val pos = openSpace.position
                         val id = when (portalPos) {
-                            openSpace.position.up() -> charMap.getValue(portalPos.up()).toString() + charMap.getValue(portalPos)
-                            openSpace.position.down() -> charMap.getValue(portalPos).toString() + charMap.getValue(portalPos.down())
-                            openSpace.position.left() -> charMap.getValue(portalPos.left()).toString() + charMap.getValue(portalPos)
-                            openSpace.position.right() -> charMap.getValue(portalPos).toString() + charMap.getValue(portalPos.right())
+                            pos.up() -> charMap.getValue(portalPos.up()).toString() + charMap.getValue(portalPos)
+                            pos.down() -> charMap.getValue(portalPos).toString() + charMap.getValue(portalPos.down())
+                            pos.left() -> charMap.getValue(portalPos.left()).toString() + charMap.getValue(portalPos)
+                            pos.right() -> charMap.getValue(portalPos).toString() + charMap.getValue(portalPos.right())
                             else -> throw IOException("Unable to determine portal ID")
                         }
 
-                        Portal(id, openSpace)
+                        Portal(
+                                id,
+                                openSpace,
+                                if (pos.x in minMaxX || pos.y in minMaxY) OUTER else INNER
+                        )
                     }
                     .toSet()
         }
 
     }
+
 
 }
 
